@@ -6,3 +6,5 @@ github.com/pkoukk/tiktoken-go v0.1.6 h1:JF0TlJzhTbrI30wCvFuiw6FzP2+/bR+FIxUdgEAc
 github.com/pkoukk/tiktoken-go v0.1.6/go.mod h1:9NiV+i9mJKGj1rYOT+njbv+ZwA/zJxYdewGl6qVatpg=
 github.com/tmc/langchaingo v0.1.15 h1:zbRfW3RiX8SSX9ck0P1y3Q7FV6VRwusRSKFykaZOh/4=
 github.com/tmc/langchaingo v0.1.15/go.mod h1:aKKYXYoqhIDEv7WKdpnnCLRaqXic69cX9MnDUk72378=
+github.com/tmc/langgraphgo v0.0.0-20240324234251-3b0caeaffd16 h1:aZ0wfdSr31qozGUM14ad6oXxdgt3EAc1e/gl1g0TAj0=
+github.com/tmc/langgraphgo v0.0.0-20240324234251-3b0caeaffd16/go.mod h1:cm31Ma79hTcvIewORqHz7v+RzZ1xn0mK2eoVILXAwEQ=
