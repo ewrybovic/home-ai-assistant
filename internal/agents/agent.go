@@ -3,6 +3,7 @@ package agents
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
@@ -44,4 +45,13 @@ func (a *Agent) Generate(ctx context.Context) error {
 	}))
 	fmt.Println()
 	return err
+}
+
+func (a *Agent) GenerateString(ctx context.Context) (string, error) {
+	var sb strings.Builder
+	_, err := a.Agent.GenerateContent(ctx, a.Messages, llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
+		sb.WriteString(string(chunk))
+		return nil
+	}))
+	return sb.String(), err
 }
