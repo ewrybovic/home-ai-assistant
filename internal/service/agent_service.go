@@ -22,7 +22,19 @@ func NewAgentService() (*AgentService, error) {
 	return &service, nil
 }
 
-func (a *AgentService) AskAgent(ctx context.Context, question string) (string, error) {
-	a.homeAgent.AddHumanMessage(question)
-	return a.homeAgent.GenerateString(ctx)
+func (s *AgentService) AskAgent(ctx context.Context, question string) (<-chan []byte, <-chan error) {
+	chunkChan := make(chan []byte)
+	errChan := make(chan error)
+
+	s.homeAgent.AddHumanMessage(question)
+
+	go func() {
+		err := s.homeAgent.GenerateChan(ctx, chunkChan)
+		if err != nil {
+			errChan <- err
+		}
+		close(errChan)
+	}()
+
+	return chunkChan, errChan
 }

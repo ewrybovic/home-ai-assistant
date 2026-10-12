@@ -38,11 +38,34 @@ func (a *AgentHandler) askAgentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	answer, err := a.agentService.AskAgent(r.Context(), req.Question)
-	if err != nil {
-		http.Error(w, "Error generating answer: "+err.Error(), http.StatusInternalServerError)
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
 
-	w.Write([]byte(answer))
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.WriteHeader(http.StatusOK)
+
+	chunkChan, errChan := a.agentService.AskAgent(r.Context(), req.Question)
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case err := <-errChan:
+			if err != nil {
+				w.Write([]byte("Error generating response: " + err.Error()))
+			}
+			return
+		case chunk, open := <-chunkChan:
+			if !open {
+				return
+			}
+
+			w.Write(chunk)
+			flusher.Flush()
+		}
+	}
 }

@@ -47,6 +47,19 @@ func (a *Agent) Generate(ctx context.Context) error {
 	return err
 }
 
+func (a *Agent) GenerateChan(ctx context.Context, chunkChan chan<- []byte) error {
+	defer close(chunkChan)
+	_, err := a.Agent.GenerateContent(ctx, a.Messages, llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case chunkChan <- chunk:
+			return nil
+		}
+	}))
+	return err
+}
+
 func (a *Agent) GenerateString(ctx context.Context) (string, error) {
 	var sb strings.Builder
 	_, err := a.Agent.GenerateContent(ctx, a.Messages, llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
